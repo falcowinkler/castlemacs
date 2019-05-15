@@ -1,5 +1,5 @@
-;;; -*- lexical-binding: t -*-
 
+;;; -*- lexical-binding: t -*-
 
 ;; ====
 ;; INIT
@@ -692,7 +692,7 @@ point reaches the beginning or end of the buffer, stop there."
 
 ;; Open private config file by pressing C-x and then c
 ;; Contain custom settings to private.el to ensure easy Castlemacs updates.
-(global-set-key (kbd "C-x c") (lambda () (interactive) (find-file "~/.emacs.d/private.el")))
+(global-set-key (kbd "C-x c") (lambda () (interactive) (find-file "~/.emacs.d/emacs-init.org")))
 
 ;; =======
 ;; THE END
