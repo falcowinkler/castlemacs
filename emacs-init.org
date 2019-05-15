@@ -1,0 +1,93 @@
+* Org
+* Clojure
+** Cider
+#+BEGIN_SRC emacs-lisp
+(unless (package-installed-p 'cider)
+  (package-install 'cider))
+(setq cider-repl-wrap-history t)
+(setq cider-repl-history-size 1000)
+(setq cider-repl-history-file "~/.cider-repl-history")
+#+END_SRC
+** Parinfer
+#+BEGIN_SRC emacs-lisp
+(use-package parinfer
+  :ensure t
+  :bind
+  (("C-," . parinfer-toggle-mode))
+  :init
+  (progn
+    (setq parinfer-extensions
+          '(defaults       ; should be included.
+             pretty-parens  ; different paren styles for different modes.
+             evil           ; If you use Evil.
+             lispy          ; If you use Lispy. With this extension, you should install Lispy and do not enable lispy-mode directly.
+             paredit        ; Introduce some paredit commands.
+             smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
+             smart-yank))   ; Yank behavior depend on mode.
+    (add-hook 'clojure-mode-hook #'parinfer-mode)
+    (add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
+    (add-hook 'common-lisp-mode-hook #'parinfer-mode)
+    (add-hook 'scheme-mode-hook #'parinfer-mode)
+    (add-hook 'lisp-mode-hook #'parinfer-mode)))
+#+END_SRC
+* Python
+** Pyenv
+#+BEGIN_SRC emacs-lisp
+(use-package pyenv-mode
+  :ensure t
+  :config
+  (defun projectile-pyenv-mode-set ()
+    "Set pyenv version matching project name."
+    (let ((project (projectile-project-name)))
+      (if (member project (pyenv-mode-versions))
+          (pyenv-mode-set project)
+        (pyenv-mode-unset))))
+  (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
+  (add-hook 'python-mode-hook 'pyenv-mode))
+(use-package pyenv-mode-auto
+  :ensure t)
+#+END_SRC
+** Jedi
+#+BEGIN_SRC emacs-lisp
+(use-package jedi
+  :ensure t
+  :init
+  (add-to-list 'company-backends 'company-jedi)
+  :config
+  (use-package company-jedi
+    :ensure t
+    :init
+    (add-hook 'python-mode-hook (lambda () (add-to-list 'company-backends 'company-jedi)))
+    (setq company-jedi-python-bin "python")))
+#+END_SRC
+** Elpy
+#+BEGIN_SRC emacs-lisp
+(use-package elpy
+  :ensure t
+  :commands elpy-enable
+  :init (with-eval-after-load 'python (elpy-enable))
+
+  :config
+  (electric-indent-local-mode -1)
+  (delete 'elpy-module-highlight-indentation elpy-modules)
+  (delete 'elpy-module-flymake elpy-modules)
+
+  (defun ha/elpy-goto-definition ()
+    (interactive)
+    (condition-case err
+        (elpy-goto-definition)
+      ('error (xref-find-definitions (symbol-name (symbol-at-point))))))
+
+  :bind (:map elpy-mode-map ([remap elpy-goto-definition] .
+                             ha/elpy-goto-definition)))
+#+END_SRC
+* Other
+#+BEGIN_SRC emacs-lisp
+(setq apropos-sort-by-scores t)
+(windmove-default-keybindings)
+(use-package htmlize)
+; Export org-mode stuff to twitter-bootstrap webpage
+(use-package ox-twbs)
+; Fullscreen on start
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+END_SRC
