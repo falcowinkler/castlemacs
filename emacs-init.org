@@ -30,6 +30,10 @@
     (add-hook 'lisp-mode-hook #'parinfer-mode)))
 #+END_SRC
 * Python
+** Other
+#+BEGIN_SRC emacs-lisp
+(setq python-shell-interpreter "/usr/local/bin/python3")
+#+END_SRC
 ** Pyenv
 #+BEGIN_SRC emacs-lisp
 (use-package pyenv-mode
@@ -81,12 +85,28 @@
                              ha/elpy-goto-definition)))
 #+END_SRC
 * Other
+** Minor configs
 #+BEGIN_SRC emacs-lisp
 (setq apropos-sort-by-scores t)
 (windmove-default-keybindings)
 (use-package htmlize)
-; Export org-mode stuff to twitter-bootstrap webpage
+                                        ; Export org-mode stuff to twitter-bootstrap webpage
 (use-package ox-twbs)
-; Fullscreen on start
+                                        ; Fullscreen on start
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+END_SRC
+** Utility functions
+#+BEGIN_SRC emacs-lisp
+(defun org-python-code-block ()
+  (interactive)
+  (save-excursion
+    (insert "#+BEGIN_SRC python :results output :exports both\n\n#+END_SRC"))
+  (next-line))
+#+END_SRC
+* Org
+** Babel
+#+BEGIN_SRC emacs-lisp
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((C . t)
+                             (python . t)))
 #+END_SRC
