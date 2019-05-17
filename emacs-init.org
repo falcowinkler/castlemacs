@@ -95,7 +95,7 @@
                                         ; Fullscreen on start
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+END_SRC
-** Utility functions
+**  Utility functions
 #+BEGIN_SRC emacs-lisp
 (defun org-python-code-block ()
   (interactive)
@@ -103,10 +103,42 @@
     (insert "#+BEGIN_SRC python :results output :exports both\n\n#+END_SRC"))
   (next-line))
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(defun org-elisp-code-block ()
+  (interactive)
+  (save-excursion
+    (insert "#+BEGIN_SRC emacs-lisp\n\n#+END_SRC"))
+  (next-line))
+#+END_SRC
+
 * Org
 ** Babel
 #+BEGIN_SRC emacs-lisp
 (org-babel-do-load-languages
  'org-babel-load-languages '((C . t)
                              (python . t)))
+#+END_SRC
+** Publishing my site
+#+BEGIN_SRC emacs-lisp
+(require 'ox-publish)
+(setq org-publish-project-alist '(("org-notes"
+                                   :base-directory "~/Desktop/Projekte/falcowinkler.github.io/org"
+                                   :base-extension "org"
+                                   :publishing-directory "~/Desktop/Projekte/falcowinkler.github.io"
+                                   :recursive t
+                                   :publishing-function org-twbs-publish-to-html
+                                   :headline-levels 4
+                                   :auto-preamble t)))
+#+END_SRC
+** Other Settings
+Disable confirmation for code evaluation
+#+BEGIN_SRC emacs-lisp
+(defun my-org-confirm-babel-evaluate (lang body)
+  (not (member lang '("python"))))
+(setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+#+END_SRC
+Set python command for code blocks
+#+BEGIN_SRC emacs-lisp
+(setq org-babel-python-command "python3")
 #+END_SRC
