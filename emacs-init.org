@@ -129,7 +129,8 @@
                                    :recursive t
                                    :publishing-function org-twbs-publish-to-html
                                    :headline-levels 4
-                                   :auto-preamble t)))
+                                   :auto-preamble t
+                                   :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/python_course.css\">")))
 #+END_SRC
 ** Other Settings
 Disable confirmation for code evaluation
