@@ -88,12 +88,11 @@
 ** Minor configs
 #+BEGIN_SRC emacs-lisp
 (setq apropos-sort-by-scores t)
-(windmove-default-keybindings)
 (use-package htmlize)
-                                        ; Export org-mode stuff to twitter-bootstrap webpage
-(use-package ox-twbs)
-                                        ; Fullscreen on start
+(use-package ox-twbs) ; Export org-mode stuff to twitter-bootstrap webpage
+; Fullscreen on start
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(setq delete-selection-mode t)
 #+END_SRC
 **  Utility functions
 #+BEGIN_SRC emacs-lisp
@@ -122,6 +121,7 @@
 ** Publishing my site
 #+BEGIN_SRC emacs-lisp
 (require 'ox-publish)
+(setq org-twbs-postamble nil)
 (setq org-publish-project-alist '(("org-notes"
                                    :base-directory "~/Desktop/Projekte/falcowinkler.github.io/org"
                                    :base-extension "org"
@@ -130,6 +130,7 @@
                                    :publishing-function org-twbs-publish-to-html
                                    :headline-levels 4
                                    :auto-preamble t
+                                   :auto-postamble nil
                                    :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/python_course.css\">")))
 #+END_SRC
 ** Other Settings
@@ -141,5 +142,33 @@ Disable confirmation for code evaluation
 #+END_SRC
 Set python command for code blocks
 #+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "M-i") 'imenu)
 (setq org-babel-python-command "python3")
+(require 'epa-file)
+(epa-file-enable)
+(setq epa-file-select-keys nil)
+(setq org-tag-alist '(("@crypt" . ?c) ("@init" . ?i)))
+(require 'org-crypt)
+(org-crypt-use-before-save-magic)
+(setq org-tags-exclude-from-inheritance (quote ("crypt")))
+;; GPG key to use for encryption
+;; Either the Key ID or set to nil to use symmetric encryption.
+(setq org-crypt-key "falcowinkler@icloud.com")
+(setf epa-pinentry-mode 'loopback)
+#+END_SRC
+
+* Alerts
+#+BEGIN_SRC emacs-lisp
+(use-package alert
+  :demand t
+  :init
+  (progn
+    (setq alert-default-style 'notifier)
+    (setq alert-user-configuration
+          '(;; throw away eshell notifications if buffer is visible:
+            (((:status selected visible)
+              (:mode . "\\`eshell-mode\\'"))
+             ignore nil)))))
+
+(use-package helm)
 #+END_SRC
