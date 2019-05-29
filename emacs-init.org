@@ -172,3 +172,11 @@ Set python command for code blocks
 
 (use-package helm)
 #+END_SRC
+* Slack
+The slack integration itself is configured in an encrypted, seperate file because it has credentials..
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-ü c") 'slack-channel-select)
+(global-set-key (kbd "C-ü p") 'slack-im-select)
+(global-set-key (kbd "C-ü r") 'slack-select-rooms)
+(global-set-key (kbd "C-ü u") 'slack-select-unread-rooms)
+#+END_SRC
