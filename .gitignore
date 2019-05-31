@@ -11,3 +11,4 @@ emacs-init.el
 emojis
 projectile.cache
 var
+secret-emacs-init.org.el

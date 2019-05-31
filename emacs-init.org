@@ -69,7 +69,7 @@
   :ensure t
   :commands elpy-enable
   :init (with-eval-after-load 'python (elpy-enable))
-
+  (elpy-set-test-runner 'elpy-test-pytest-runner)
   :config
   (electric-indent-local-mode -1)
   (delete 'elpy-module-highlight-indentation elpy-modules)
@@ -83,6 +83,14 @@
 
   :bind (:map elpy-mode-map ([remap elpy-goto-definition] .
                              ha/elpy-goto-definition)))
+(setq elpy-test-pytest-runner-command '("py.test" "--pdb"))
+#+END_SRC
+** GUD
+#+BEGIN_SRC emacs-lisp
+(use-package realgud)
+(advice-add 'realgud-suggest-invocation :override
+            (lambda (debugger-name _minibuffer-history lang-str lang-ext-regexp
+		 &optional last-resort) debugger-name))
 #+END_SRC
 * Other
 ** Minor configs
@@ -176,7 +184,12 @@ Set python command for code blocks
 The slack integration itself is configured in an encrypted, seperate file because it has credentials..
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-ü c") 'slack-channel-select)
+(global-set-key (kbd "C-ü g") 'slack-group-select)
 (global-set-key (kbd "C-ü p") 'slack-im-select)
 (global-set-key (kbd "C-ü r") 'slack-select-rooms)
 (global-set-key (kbd "C-ü u") 'slack-select-unread-rooms)
+#+END_SRC
+* Terraform
+#+BEGIN_SRC emacs-lisp
+(use-package terraform-mode)
 #+END_SRC
