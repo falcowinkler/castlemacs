@@ -9,6 +9,8 @@
 #+END_SRC
 ** Parinfer
 #+BEGIN_SRC emacs-lisp
+(use-package lispy)
+(use-package paredit)
 (use-package parinfer
   :ensure t
   :bind
@@ -18,7 +20,6 @@
     (setq parinfer-extensions
           '(defaults       ; should be included.
              pretty-parens  ; different paren styles for different modes.
-             evil           ; If you use Evil.
              lispy          ; If you use Lispy. With this extension, you should install Lispy and do not enable lispy-mode directly.
              paredit        ; Introduce some paredit commands.
              smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
@@ -28,8 +29,24 @@
     (add-hook 'common-lisp-mode-hook #'parinfer-mode)
     (add-hook 'scheme-mode-hook #'parinfer-mode)
     (add-hook 'lisp-mode-hook #'parinfer-mode)))
+
+(use-package clj-refactor)
+(require 'clj-refactor)
+(defun clojure-mode-additional-hook ()
+    (clj-refactor-mode 1)
+    (yas-minor-mode 1) ; for adding require/use/import statements
+    ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+    (cljr-add-keybindings-with-prefix "C-c C-n"))
+(add-hook 'clojure-mode-hook #'clojure-mode-additional-hook)
 #+END_SRC
 * Python
+** Custom keybinds
+#+BEGIN_SRC emacs-lisp
+(add-hook 'python-mode-hook
+          (lambda () (define-key python-mode-map (kbd "C-c e f") 'python-pytest-file)
+            (define-key python-mode-map (kbd "C-c e t") 'python-pytest-popup)
+            (define-key python-mode-map (kbd "C-c e d") 'elpy-goto-definition)))
+#+END_SRC
 ** Other
 #+BEGIN_SRC emacs-lisp
 (setq python-shell-interpreter "/usr/local/bin/python3")
@@ -83,7 +100,8 @@
 
   :bind (:map elpy-mode-map ([remap elpy-goto-definition] .
                              ha/elpy-goto-definition)))
-(setq elpy-test-pytest-runner-command '("py.test" "--pdb"))
+(setq elpy-test-pytest-runner-command '("py.test"))
+
 #+END_SRC
 ** GUD
 #+BEGIN_SRC emacs-lisp
@@ -91,6 +109,40 @@
 (advice-add 'realgud-suggest-invocation :override
             (lambda (debugger-name _minibuffer-history lang-str lang-ext-regexp
 		 &optional last-resort) debugger-name))
+#+END_SRC
+** pytest
+
+#+BEGIN_SRC emacs-lisp
+(use-package python-pytest
+  :after python
+  :custom
+  (python-pytest-arguments
+   '("--color"          ;; colored output in the buffer
+     "--failed-first"   ;; run the previous failed tests first
+     "--maxfail=5")))
+#+END_SRC
+* Swift
+#+BEGIN_SRC emacs-lisp
+
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(use-package flycheck-swiftlint
+  :ensure t
+  :config
+  (with-eval-after-load 'flycheck
+    (flycheck-swiftlint-setup)))
+
+(use-package lsp-mode :ensure t)
+
+(use-package lsp-sourcekit
+  :ensure t
+  :after lsp-mode
+  :config
+  (setenv "SOURCEKIT_TOOLCHAIN_PATH" "/Library/Developer/Toolchains/swift-latest.xctoolchain")
+  (setq lsp-sourcekit-executable (expand-file-name "~/sourcekit-lsp/.build/debug/sourcekit-lsp")))
+
+(use-package swift-mode
+  :hook (swift-mode . (lambda () (lsp))))
+
 #+END_SRC
 * Other
 ** Minor configs
@@ -101,6 +153,8 @@
 ; Fullscreen on start
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (setq delete-selection-mode t)
+; Neotree in multiple frames
+(setq projectile-switch-project-action 'neotree-projectile-action)
 #+END_SRC
 **  Utility functions
 #+BEGIN_SRC emacs-lisp
@@ -118,8 +172,15 @@
     (insert "#+BEGIN_SRC emacs-lisp\n\n#+END_SRC"))
   (next-line))
 #+END_SRC
-
 * Org
+** org-exporters
+#+BEGIN_SRC emacs-lisp
+(require 'ox-publish)
+(setq org-twbs-postamble nil)
+(use-package ox-reveal)
+(setq org-reveal-root "file:///Users/falco.winkler/reveal.js-3.8.0")
+(setq org-reveal-title-slide nil)
+#+END_SRC
 ** Babel
 #+BEGIN_SRC emacs-lisp
 (org-babel-do-load-languages
@@ -128,8 +189,6 @@
 #+END_SRC
 ** Publishing my site
 #+BEGIN_SRC emacs-lisp
-(require 'ox-publish)
-(setq org-twbs-postamble nil)
 (setq org-publish-project-alist '(("org-notes"
                                    :base-directory "~/Desktop/Projekte/falcowinkler.github.io/org"
                                    :base-extension "org"
@@ -152,6 +211,9 @@ Set python command for code blocks
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "M-i") 'imenu)
 (setq org-babel-python-command "python3")
+#+END_SRC
+Set up org encryption (e.g. for secret-emacs-init in this folder)
+#+BEGIN_SRC emacs-lisp
 (require 'epa-file)
 (epa-file-enable)
 (setq epa-file-select-keys nil)
@@ -163,6 +225,24 @@ Set python command for code blocks
 ;; Either the Key ID or set to nil to use symmetric encryption.
 (setq org-crypt-key "falcowinkler@icloud.com")
 (setf epa-pinentry-mode 'loopback)
+(setq org-agenda-files '("/Users/falco.winkler/org"))
+#+END_SRC
+Customize todo-states and tags
+#+BEGIN_SRC emacs-lisp
+(setq org-todo-keywords
+      '(
+        (sequence "IDEA(i)" "TODO(t)" "STARTED(s)" "NEXT(n)" "WAITING(w)" "|" "DONE(d)")
+        (sequence "|" "CANCELED(c)" "DELEGATED(l)" "SOMEDAY(f)")
+        ))
+(setq org-todo-keyword-faces
+      '(("IDEA" . (:foreground "GoldenRod" :weight bold))
+        ("NEXT" . (:foreground "IndianRed1" :weight bold))
+        ("STARTED" . (:foreground "OrangeRed" :weight bold))
+        ("WAITING" . (:foreground "coral" :weight bold))
+        ("CANCELED" . (:foreground "LimeGreen" :weight bold))
+        ("DELEGATED" . (:foreground "LimeGreen" :weight bold))
+        ("SOMEDAY" . (:foreground "LimeGreen" :weight bold))
+        ))
 #+END_SRC
 
 * Alerts
@@ -182,6 +262,9 @@ Set python command for code blocks
 #+END_SRC
 * Slack
 The slack integration itself is configured in an encrypted, seperate file because it has credentials..
+I had to reinstall emacs like this to make dbus work
+- ~brew tap daviderestivo/emacs-head~
+- ~brew install emacs-head --HEAD --with-cocoa --with-librsvg --with-imagemagick@7 --with-jansson --with-multicolor-fonts --with-no-frame-refocus --with-mailutils --with-dbus --with-modules~
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-ü c") 'slack-channel-select)
 (global-set-key (kbd "C-ü g") 'slack-group-select)
@@ -192,4 +275,82 @@ The slack integration itself is configured in an encrypted, seperate file becaus
 * Terraform
 #+BEGIN_SRC emacs-lisp
 (use-package terraform-mode)
+#+END_SRC
+* Treemacs
+#+BEGIN_SRC emacs-lisp
+(use-package treemacs
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (progn
+    (setq treemacs-collapse-dirs                 (if (executable-find "python3") 3 0)
+          treemacs-deferred-git-apply-delay      0.5
+          treemacs-display-in-side-window        t
+          treemacs-eldoc-display                 t
+          treemacs-file-event-delay              5000
+          treemacs-file-follow-delay             0.2
+          treemacs-follow-after-init             t
+          treemacs-git-command-pipe              ""
+          treemacs-goto-tag-strategy             'refetch-index
+          treemacs-indentation                   2
+          treemacs-indentation-string            " "
+          treemacs-is-never-other-window         nil
+          treemacs-max-git-entries               5000
+          treemacs-missing-project-action        'ask
+          treemacs-no-png-images                 nil
+          treemacs-no-delete-other-windows       t
+          treemacs-project-follow-cleanup        nil
+          treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+          treemacs-recenter-distance             0.1
+          treemacs-recenter-after-file-follow    nil
+          treemacs-recenter-after-tag-follow     nil
+          treemacs-recenter-after-project-jump   'always
+          treemacs-recenter-after-project-expand 'on-distance
+          treemacs-show-cursor                   nil
+          treemacs-show-hidden-files             t
+          treemacs-silent-filewatch              nil
+          treemacs-silent-refresh                nil
+          treemacs-sorting                       'alphabetic-desc
+          treemacs-space-between-root-nodes      t
+          treemacs-tag-follow-cleanup            t
+          treemacs-tag-follow-delay              1.5
+          treemacs-width                         35)
+
+    ;; The default width and height of the icons is 22 pixels. If you are
+    ;; using a Hi-DPI display, uncomment this to double the icon size.
+    ;;(treemacs-resize-icons 44)
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode t)
+    (pcase (cons (not (null (executable-find "git")))
+                 (not (null (executable-find "python3"))))
+      (`(t . t)
+       (treemacs-git-mode 'deferred))
+      (`(t . _)
+       (treemacs-git-mode 'simple))))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-projectile
+  :after treemacs projectile
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :after treemacs dired
+  :ensure t
+  :config (treemacs-icons-dired-mode))
+
+(use-package treemacs-magit
+  :after treemacs magit
+  :ensure t)
 #+END_SRC

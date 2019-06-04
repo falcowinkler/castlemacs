@@ -8,14 +8,14 @@
 ;; Package system and sources.
 (require 'package)
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                 (not (gnutls-available-p))))
-    (proto (if no-ssl "http" "https")))
-    ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-    (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-    ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-    (when (< emacs-major-version 24)
+                    (not (gnutls-available-p))))
+       (proto (if no-ssl "http" "https")))
+  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
+  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+  (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+  (when (< emacs-major-version 24)
     ;; For important compatibility libraries like cl-lib
-(add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
+    (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
 
 (package-initialize)
 
@@ -220,22 +220,22 @@
 
 
 ;; File tree
-(use-package neotree
-  :config
-  (setq neo-window-width 32
-        neo-create-file-auto-open t
-        neo-banner-message nil
-        neo-show-updir-line t
-        neo-window-fixed-size nil
-        neo-vc-integration nil
-        neo-mode-line-type 'neotree
-        neo-smart-open t
-        neo-show-hidden-files t
-        neo-mode-line-type 'none
-        neo-auto-indent-point t)
-  (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
-  (setq neo-hidden-regexp-list '("venv" "\\.pyc$" "~$" "\\.git" "__pycache__" ".DS_Store"))
-  (global-set-key (kbd "s-B") 'neotree-toggle))           ;; Cmd+Shift+b toggle tree
+;; (use-package neotree
+;;   :config
+;;   (setq neo-window-width 32
+;;         neo-create-file-auto-open t
+;;         neo-banner-message nil
+;;         neo-show-updir-line t
+;;         neo-window-fixed-size nil
+;;         neo-vc-integration nil
+;;         neo-mode-line-type 'neotree
+;;         neo-smart-open t
+;;         neo-show-hidden-files t
+;;         neo-mode-line-type 'none
+;;         neo-auto-indent-point t)
+;;   (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
+;;   (setq neo-hidden-regexp-list '("venv" "\\.pyc$" "~$" "\\.git" "__pycache__" ".DS_Store"))
+;;   (global-set-key (kbd "s-B") 'neotree-toggle))           ;; Cmd+Shift+b toggle tree
 
 
 ;; Show vi-like tilde in the fringe on empty lines.
