@@ -1,16 +1,27 @@
 * Clojure
 ** Cider
 #+BEGIN_SRC emacs-lisp
-(unless (package-installed-p 'cider)
-  (package-install 'cider))
+(use-package clojure-mode
+  :ensure t
+  :config
+  (add-hook 'clojure-mode-hook #'parinfer-mode))
+
+(use-package cider
+  :ensure t
+  :config
+  (setq nrepl-log-messages t)
+  (add-hook 'cider-mode-hook #'eldoc-mode)
+  (add-hook 'cider-repl-mode-hook #'eldoc-mode)
+  (add-hook 'cider-repl-mode-hook #'parinfer-mode))
 (setq cider-repl-wrap-history t)
 (setq cider-repl-history-size 1000)
 (setq cider-repl-history-file "~/.cider-repl-history")
+(setq cider-debug-prompt 'minibuffer)
 #+END_SRC
 ** Parinfer
 #+BEGIN_SRC emacs-lisp
 (use-package lispy)
-(use-package paredit)
+;(use-package paredit)
 (use-package parinfer
   :ensure t
   :bind
@@ -33,10 +44,10 @@
 (use-package clj-refactor)
 (require 'clj-refactor)
 (defun clojure-mode-additional-hook ()
-    (clj-refactor-mode 1)
-    (yas-minor-mode 1) ; for adding require/use/import statements
-    ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-    (cljr-add-keybindings-with-prefix "C-c C-n"))
+   (clj-refactor-mode 1)
+   (yas-minor-mode 1) ; for adding require/use/import statements
+    This choice of keybinding leaves cider-macroexpand-1 unbound
+   (cljr-add-keybindings-with-prefix "C-c C-n"))
 (add-hook 'clojure-mode-hook #'clojure-mode-additional-hook)
 #+END_SRC
 * Python
@@ -105,10 +116,10 @@
 #+END_SRC
 ** GUD
 #+BEGIN_SRC emacs-lisp
-(use-package realgud)
-(advice-add 'realgud-suggest-invocation :override
-            (lambda (debugger-name _minibuffer-history lang-str lang-ext-regexp
-		 &optional last-resort) debugger-name))
+;; (use-package realgud)
+;;  (advice-add 'realgud-suggest-invocation :override
+;;              (lambda (debugger-name _minibuffer-history lang-str lang-ext-regexp
+;;  		 &optional last-resort) debugger-name))
 #+END_SRC
 ** pytest
 
@@ -121,29 +132,6 @@
      "--failed-first"   ;; run the previous failed tests first
      "--maxfail=5")))
 #+END_SRC
-* Swift
-#+BEGIN_SRC emacs-lisp
-
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(use-package flycheck-swiftlint
-  :ensure t
-  :config
-  (with-eval-after-load 'flycheck
-    (flycheck-swiftlint-setup)))
-
-(use-package lsp-mode :ensure t)
-
-(use-package lsp-sourcekit
-  :ensure t
-  :after lsp-mode
-  :config
-  (setenv "SOURCEKIT_TOOLCHAIN_PATH" "/Library/Developer/Toolchains/swift-latest.xctoolchain")
-  (setq lsp-sourcekit-executable (expand-file-name "~/sourcekit-lsp/.build/debug/sourcekit-lsp")))
-
-(use-package swift-mode
-  :hook (swift-mode . (lambda () (lsp))))
-
-#+END_SRC
 * Other
 ** Minor configs
 #+BEGIN_SRC emacs-lisp
@@ -155,6 +143,10 @@
 (setq delete-selection-mode t)
 ; Neotree in multiple frames
 (setq projectile-switch-project-action 'neotree-projectile-action)
+#+END_SRC
+** Helm
+#+BEGIN_SRC emacs-lisp
+(require 'helm-config)
 #+END_SRC
 **  Utility functions
 #+BEGIN_SRC emacs-lisp
@@ -178,7 +170,8 @@
 (require 'ox-publish)
 (setq org-twbs-postamble nil)
 (use-package ox-reveal)
-(setq org-reveal-root "file:///Users/falco.winkler/reveal.js-3.8.0")
+(setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js@3.7.0")
+;(setq org-reveal-root "file:///Users/falco.winkler/reveal.js-3.8.0")
 (setq org-reveal-title-slide nil)
 #+END_SRC
 ** Babel
@@ -353,4 +346,8 @@ I had to reinstall emacs like this to make dbus work
 (use-package treemacs-magit
   :after treemacs magit
   :ensure t)
+#+END_SRC
+* Helm
+#+BEGIN_SRC emacs-lisp
+(use-package helm-projectile)
 #+END_SRC

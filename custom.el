@@ -8,7 +8,7 @@
  '(elpy-test-runner 'elpy-test-pytest-runner)
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(lsp lsp-mode swift-mode lsp-sourcekit flycheck-swiftlint clj-refactor lispy paredit ox-reveal org-reveal python-pytest treemacs-magit treemacs-icons-dired treemacs-projectile treemacs realgud terraform-mode slack helm ox-twbs htmlize company-jedi jedi pyenv-mode-auto pyenv-mode parinfer cider emmet-mode web-mode markdown-mode haml-mode yaml-mode define-word powerthesaurus flyspell-correct-popup flyspell-correct company shell-pop git-gutter magit counsel-projectile ivy-rich avy flx smex counsel swiper ivy projectile multiple-cursors visual-regexp move-text expand-region which-key vi-tilde-fringe neotree rich-minority smartparens all-the-icons undo-tree simpleclip exec-path-from-shell use-package))
+   '(helm-projectile clj-refactor realgud lsp lsp-mode swift-mode lsp-sourcekit flycheck-swiftlint lispy paredit ox-reveal org-reveal python-pytest treemacs-magit treemacs-icons-dired treemacs-projectile treemacs terraform-mode slack helm ox-twbs htmlize company-jedi jedi pyenv-mode-auto pyenv-mode parinfer cider emmet-mode web-mode markdown-mode haml-mode yaml-mode define-word powerthesaurus flyspell-correct-popup flyspell-correct company shell-pop git-gutter magit counsel-projectile ivy-rich avy flx smex counsel swiper ivy projectile multiple-cursors visual-regexp move-text expand-region which-key vi-tilde-fringe neotree rich-minority smartparens all-the-icons undo-tree simpleclip exec-path-from-shell use-package))
  '(realgud:pdb-command-name "py.test --pdb")
  '(shell-pop-shell-type
    '("ansi-term" "*ansi-term*"
