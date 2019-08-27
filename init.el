@@ -696,3 +696,4 @@ point reaches the beginning or end of the buffer, stop there."
 
 ;; =======
 ;; THE END
+(put 'scroll-left 'disabled nil)
